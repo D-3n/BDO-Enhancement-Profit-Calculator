@@ -1,11 +1,8 @@
-mod bdo_calculations;
-mod bdo_market_requests;
-mod bdo_accessory_calcs;
 use std::io;
-use bdo_accessory_calcs::filter_accs::filter_accessories_category;
-use bdo_market_requests::{bdo_post_requests::{get_item_buy_sell_info, get_item_info}, sort_buy_sell_info, sort_category_given_info, CategoryGivenInfo, ItemBuySellInfo};
+use bdo_enhancement_profit_calculator::accessories;
+use bdo_enhancement_profit_calculator::bdo_market_requests::{bdo_post_requests::{get_item_buy_sell_info}, sort_buy_sell_info, sort_category_given_info};
 
-use crate::{bdo_market_requests::{bdo_post_requests::get_items_from_category, sort_specific_item_info}, bdo_calculations::market_calcs::{calc_profit, get_market_tax, calc_profit_taxed}};
+use {bdo_enhancement_profit_calculator::bdo_market_requests::{bdo_post_requests::get_items_from_category}, bdo_enhancement_profit_calculator::general_calcs::market_calcs::{calc_profit, get_market_tax, calc_profit_taxed}};
 
 fn main() {
 
@@ -25,7 +22,7 @@ fn main() {
     accessories.append(&mut earrings);
     accessories.append(&mut belts);
 
-    let accessories = filter_accessories_category(accessories, 3, 10000000, u64::MAX);
+    let accessories = accessories::filter_accessories_category(accessories, 3, 10000000, u64::MAX);
 
 
     for acc in accessories {
@@ -47,6 +44,6 @@ fn main() {
             println!("Profit after tax: {}", calc_profit_taxed(sold_price * 73, tet_info.base_price.try_into().unwrap(), get_market_tax(4500, true, false)));
         }   
     }
-    io::stdin().read_line(&mut String::new()).unwrap(); 
+    io::stdin().read_line(&mut String::new()).unwrap();
 }
 
