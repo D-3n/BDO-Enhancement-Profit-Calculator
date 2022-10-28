@@ -9,4 +9,4 @@ When compiling, three environment variables need to be set:
     <li> <strong>BDO_QUERY_REQUEST_VERFICATION_TOKEN</strong>
 </ol>
 These values need to be set from your central market.
-Instructions are provided in `/src/bdo_market_requests/bdo_post_requests.rs`
+Instructions are provided in <code>/src/bdo_market_requests/bdo_post_requests.rs</code>
