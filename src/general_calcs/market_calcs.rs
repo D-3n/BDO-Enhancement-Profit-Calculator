@@ -33,7 +33,6 @@ pub fn get_market_tax(fam_fame: u16, value_pack: bool, merch_ring: bool) -> f64 
     } else if fam_fame >= 1000 {
         bonus += 0.005;
     };
-    println!("{}, {}", base_silver, bonus);
     return base_silver + (base_silver * bonus)
 }
 
