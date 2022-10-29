@@ -10,6 +10,7 @@
 /// ```
 /// 
 pub fn get_market_url(region: &str) -> &str {
+
     match region {
         "na" => "https://na-trade.naeu.playblackdesert.com",
         "eu" => "https://eu-trade.naeu.playblackdesert.com",
@@ -24,7 +25,10 @@ pub fn get_market_url(region: &str) -> &str {
         "console_eu" => "https://eu-trade.console.playblackdesert.com",
         "console_na" => "https://na-trade.console.playblackdesert.com",
         "console_asia" => "https://asia-trade.console.playblackdesert.com",
-        _ => panic!("Invalid region entered!"),
+        oth => {
+            println!("got {}", oth);
+            panic!("Invalid region entered!")
+            },
     }
 }
 

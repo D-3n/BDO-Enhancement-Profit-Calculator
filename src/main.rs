@@ -4,12 +4,25 @@ use bdo_enhancement_profit_calculator::bdo_market_requests::{bdo_post_requests::
 
 use {bdo_enhancement_profit_calculator::bdo_market_requests::{bdo_post_requests::get_items_from_category}, bdo_enhancement_profit_calculator::general_calcs::market_calcs::{calc_profit, get_market_tax, calc_profit_taxed}};
 
+fn get_region() -> String {
+    let mut inp_region = String::new();
+    println!("Please enter the region for which you wish to the run the commands: ");
+    io::stdin().read_line(&mut inp_region).unwrap();
+
+    inp_region.trim().to_lowercase()
+}
+
 fn main() {
 
-    let rings = get_items_from_category("eu", 20, 1).unwrap();
-    let necklaces = get_items_from_category("eu", 20, 2).unwrap();
-    let earrings = get_items_from_category("eu", 20, 3).unwrap();
-    let belts = get_items_from_category("eu", 20, 4).unwrap();
+    
+
+    let str_inp_region = get_region();
+    let str_inp_region = str_inp_region.as_str();
+
+    let rings = get_items_from_category(str_inp_region, 20, 1).unwrap();
+    let necklaces = get_items_from_category(str_inp_region, 20, 2).unwrap();
+    let earrings = get_items_from_category(str_inp_region, 20, 3).unwrap();
+    let belts = get_items_from_category(str_inp_region, 20, 4).unwrap();
     
     let mut rings = sort_category_given_info(rings).unwrap();
     let mut necklaces = sort_category_given_info(necklaces).unwrap();
@@ -28,8 +41,8 @@ fn main() {
     for acc in accessories {
         let id = acc.item_id.to_string();
         let id = &id;
-        let base_info = get_item_buy_sell_info("eu", id, "0").unwrap();
-        let tet_info = get_item_buy_sell_info("eu", id, "4").unwrap();
+        let base_info = get_item_buy_sell_info(str_inp_region, id, "0").unwrap();
+        let tet_info = get_item_buy_sell_info(str_inp_region, id, "4").unwrap();
         let base_info = sort_buy_sell_info(base_info).unwrap();
         let tet_info = sort_buy_sell_info(tet_info).unwrap();
 
