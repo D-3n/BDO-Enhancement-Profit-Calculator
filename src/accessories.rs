@@ -1,6 +1,11 @@
 //! # Accessories
 //! 
 //! Accessories is a collection of commands related to accessories, and how their enhancement works.
+use reqwest::get;
+
+use crate::bdo_market_requests::bdo_post_requests::get_item_buy_sell_info;
+use crate::bdo_market_requests::sort_buy_sell_info;
+use crate::bdo_market_requests::ItemBuySellInfo;
 
 use crate::bdo_market_requests::CategoryGivenInfo;
 
