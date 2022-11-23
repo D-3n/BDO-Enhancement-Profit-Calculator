@@ -6,6 +6,10 @@ use rand::Rng;
 
 /// Calculates the total chance of success given multiple attempts.
 /// 
+/// # Panics
+/// 
+/// If the chance given is greater than 100. Chances where 1 < chance <= 100 are divided by 100 and used.
+/// 
 /// # Example
 /// 
 /// ```
@@ -18,6 +22,15 @@ use rand::Rng;
 /// ```
 /// 
 pub fn calc_total_chance(chance: f64, attempt_amount: i32) -> f64 {
+
+    let chance = if chance > 1.0 && chance <= 100.0 {
+        chance / 100.0
+    } else if chance > 100.0 {
+        panic!("Chance is greater than 1. Could not be changed from percentage to decimal.")
+    } else {
+        chance
+    };
+
     1.0 - ((1.0 - chance).powi(attempt_amount))
 }
 

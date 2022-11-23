@@ -1,11 +1,6 @@
 //! # Accessories
 //! 
 //! Accessories is a collection of commands related to accessories, and how their enhancement works.
-use reqwest::get;
-
-use crate::bdo_market_requests::bdo_post_requests::get_item_buy_sell_info;
-use crate::bdo_market_requests::sort_buy_sell_info;
-use crate::bdo_market_requests::ItemBuySellInfo;
 
 use crate::bdo_market_requests::CategoryGivenInfo;
 
@@ -20,6 +15,11 @@ pub fn filter_accessories_category(accessories: Vec<CategoryGivenInfo>, grade_fi
 }
 
 /// Calculates the success chance of enhancing an accessory.
+/// 
+/// # Panics
+/// 
+/// If the given enhancement level is greater than 5.
+/// 
 /// 
 /// # Examples
 /// 
@@ -39,8 +39,12 @@ pub fn filter_accessories_category(accessories: Vec<CategoryGivenInfo>, grade_fi
 /// 
 pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
     
+    if enhancement_level > 5 || enhancement_level < 1 {
+        panic!("The range for accessories is 0-5 (BASE - PEN), level given was {enhancement_level}");
+    }
+
     let chance: f64;
-    let failstack = failstack as f64;
+    let failstack: f64 = failstack as f64;
 
     match enhancement_level {
         1 => if failstack > 18.0 {chance = 0.25 + (18.0 * 0.025) + ((failstack - 18.0) * 0.005)} else {chance = 0.25 + (failstack * 0.025)}
@@ -48,15 +52,20 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
         3 => if failstack > 44.0 {chance = 0.075 + (44.0 * 0.0075) + ((failstack - 44.0) * 0.0015)} else {chance = 0.075 + (failstack * 0.0075)}
         4 => if failstack > 110.0 {chance = 0.025 + (110.0 * 0.0025) + ((failstack - 110.0) * 0.0005)} else {chance = 0.025 + (failstack * 0.0025)}
         5 => if failstack > 390.0 {chance = 0.005 + (390.0 * 0.0005) + ((failstack - 390.0) * 0.0001)} else {chance = 0.005 + (failstack * 0.0005)}
-        _ => chance = 0.0
+        _ => panic!("Impossible result for enhancement level: {enhancement_level}")
     }
 
-    if chance > 0.9 {return 0.9};
+    if chance > 0.9 {return 0.9}; // No matter the stack, enhancements can't have more than a 90% chance.
 
     chance
 }
 
 /// Calculates accessories required to enhance from base to a certain level.
+/// 
+/// # Panics
+/// 
+/// If the given enhancement level is greater than 5.
+/// 
 /// 
 /// # Examples
 /// 
@@ -75,6 +84,10 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
 /// ```
 /// 
 pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
+
+    if end_enhancement < 1 || end_enhancement > 5 {
+        panic!("The range for accessories is 0-5 (BASE - PEN), level given was {end_enhancement}");
+    }
     let mut amount: f64 = 1.0;
     let mut i: u8 = 1;
     for stack in stacks {
