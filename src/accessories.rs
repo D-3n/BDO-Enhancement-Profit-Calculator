@@ -77,7 +77,7 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
 /// 
 /// ``` 
 /// let stacks = vec![20];
-/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(2, stacks);
+/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(1, stacks);
 /// 
 /// assert_eq!(3, amount);
 /// ```
@@ -87,7 +87,7 @@ pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
     if end_enhancement < 1 || end_enhancement > 5 {
         panic!("Enhancement level of {end_enhancement}, was given, when it should be in the range 1-5.");
     };
-    if stacks.len() < end_enhancement.into() {
+    if stacks.len() < (end_enhancement as usize) {
         panic!("Not enough stacks were supplied.");
     };
 
@@ -121,7 +121,7 @@ pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
 /// 
 /// ``` 
 /// let stacks = vec![20];
-/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(2, stacks);
+/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(1, stacks);
 /// 
 /// assert_eq!(3, amount);
 /// ```
@@ -131,7 +131,7 @@ pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 
     if end_enhancement < 1 || end_enhancement > 5 {
         panic!("Enhancement level of {end_enhancement}, was given, when it should be in the range 1-5.");
     };
-    if stacks.len() < end_enhancement.into() {
+    if stacks.len() < (end_enhancement as usize) {
         panic!("Not enough stacks were supplied.");
     };
 
