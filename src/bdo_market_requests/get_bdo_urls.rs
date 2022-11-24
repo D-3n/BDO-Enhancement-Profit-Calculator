@@ -1,5 +1,9 @@
 /// Gets the url of a region's market given the abbreviation of the region.
 ///
+/// # Panics
+/// 
+/// If the given region is not valid.
+/// 
 /// # Examples
 /// 
 /// ```
