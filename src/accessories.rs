@@ -114,16 +114,16 @@ pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
 /// 
 /// ```
 /// let stacks = vec![20, 40, 44, 110, 250];
-/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(4, stacks);
+/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required_exact(4, stacks);
 /// 
-/// assert_eq!(75, amount);
+/// assert_eq!(74.39343882223382, amount);
 /// ```
 /// 
 /// ``` 
 /// let stacks = vec![20];
-/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(1, stacks);
+/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required_exact(1, stacks);
 /// 
-/// assert_eq!(3, amount);
+/// assert_eq!(2.8169014084507045, amount);
 /// ```
 /// 
 pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 {
