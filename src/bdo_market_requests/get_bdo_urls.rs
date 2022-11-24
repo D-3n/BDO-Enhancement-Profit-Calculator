@@ -1,20 +1,19 @@
 /// Gets the url of a region's market given the abbreviation of the region.
 ///
 /// # Panics
-/// 
+///
 /// If the given region is not valid.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use bdo_enhancement_profit_calculator::bdo_market_requests::get_bdo_urls::get_market_url;
-/// 
+///
 /// let link = get_market_url("na");
 /// assert_eq!("https://na-trade.naeu.playblackdesert.com", link);
 /// ```
-/// 
+///
 pub fn get_market_url(region: &str) -> &str {
-
     match region {
         "na" => "https://na-trade.naeu.playblackdesert.com",
         "eu" => "https://eu-trade.naeu.playblackdesert.com",
@@ -32,22 +31,22 @@ pub fn get_market_url(region: &str) -> &str {
         oth => {
             println!("got {}", oth);
             panic!("Invalid region entered!")
-            },
+        }
     }
 }
 
 /// Appends a string to the given url.
 ///
 /// # Examples
-/// 
+///
 /// ```
 /// use bdo_enhancement_profit_calculator::bdo_market_requests::get_bdo_urls::create_post_url;
-/// 
+///
 /// let link = create_post_url("https://www.example.com", "/test");
-/// 
+///
 /// assert_eq!("https://www.example.com/test", link);
 /// ```
-/// 
+///
 pub fn create_post_url(region_url: &str, post_req_subdirectory: &str) -> String {
     let mut url = region_url.to_owned();
     url.push_str(post_req_subdirectory);
