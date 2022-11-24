@@ -6,6 +6,10 @@ use rand::Rng;
 
 /// Calculates the total chance of success given multiple attempts.
 /// 
+/// # Panics
+/// 
+/// If chance > 1
+/// 
 /// # Example
 /// 
 /// ```
@@ -18,10 +22,19 @@ use rand::Rng;
 /// ```
 /// 
 pub fn calc_total_chance(chance: f64, attempt_amount: i32) -> f64 {
+    
+    if chance > 1.0 {
+        panic!("Chance is greater than 100%! Input chances as decimals.")
+    }
+    
     1.0 - ((1.0 - chance).powi(attempt_amount))
 }
 
 /// Simulates an enhancement of given chance.
+/// 
+/// # Panics
+/// 
+/// If chance > 1
 /// 
 /// # Example
 /// 
@@ -38,6 +51,11 @@ pub fn calc_total_chance(chance: f64, attempt_amount: i32) -> f64 {
 /// ```
 /// 
 pub fn simulate_enhancement(chance: f64) -> bool {
+    
+    if chance > 1.0 {
+        panic!("Chance is greater than 100%! Input chances as decimals.")
+    }
+    
     let simulated_chance: f64 = rand::thread_rng().gen();
     if simulated_chance < chance {return true} else {return false}
 }
