@@ -1,11 +1,6 @@
 //! # Accessories
 //! 
 //! Accessories is a collection of commands related to accessories, and how their enhancement works.
-use reqwest::get;
-
-use crate::bdo_market_requests::bdo_post_requests::get_item_buy_sell_info;
-use crate::bdo_market_requests::sort_buy_sell_info;
-use crate::bdo_market_requests::ItemBuySellInfo;
 
 use crate::bdo_market_requests::CategoryGivenInfo;
 
@@ -20,6 +15,10 @@ pub fn filter_accessories_category(accessories: Vec<CategoryGivenInfo>, grade_fi
 }
 
 /// Calculates the success chance of enhancing an accessory.
+/// 
+/// # Panics
+/// 
+/// If the enhancement level is not a valid enhancement (1 - 5 for PRI - PEN)
 /// 
 /// # Examples
 /// 
@@ -39,6 +38,10 @@ pub fn filter_accessories_category(accessories: Vec<CategoryGivenInfo>, grade_fi
 /// 
 pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
     
+    if enhancement_level < 1 || enhancement_level > 5 {
+        panic!("Enhancement level of {enhancement_level}, was given, when it should be in the range 1-5.");
+    }
+
     let chance: f64;
     let failstack = failstack as f64;
 
@@ -58,6 +61,11 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
 
 /// Calculates accessories required to enhance from base to a certain level.
 /// 
+/// # Panics
+/// 
+/// If there are less stacks then required
+/// If the enhancement level is too high/low
+/// 
 /// # Examples
 /// 
 /// ```
@@ -75,6 +83,14 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
 /// ```
 /// 
 pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
+
+    if end_enhancement < 1 || end_enhancement > 5 {
+        panic!("Enhancement level of {end_enhancement}, was given, when it should be in the range 1-5.");
+    };
+    if stacks.len() < end_enhancement.into() {
+        panic!("Not enough stacks were supplied.");
+    };
+
     let mut amount: f64 = 1.0;
     let mut i: u8 = 1;
     for stack in stacks {
@@ -84,4 +100,48 @@ pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
     }
 
     amount.ceil() as u16
+}
+
+
+/// Calculates accessories required to enhance from base to a certain level, and does not round.
+/// 
+/// # Panics
+/// 
+/// If there are less stacks then required
+/// If the enhancement level is too high/low
+/// 
+/// # Examples
+/// 
+/// ```
+/// let stacks = vec![20, 40, 44, 110, 250];
+/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(4, stacks);
+/// 
+/// assert_eq!(75, amount);
+/// ```
+/// 
+/// ``` 
+/// let stacks = vec![20];
+/// let amount = bdo_enhancement_profit_calculator::accessories::accessories_required(2, stacks);
+/// 
+/// assert_eq!(3, amount);
+/// ```
+/// 
+pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 {
+
+    if end_enhancement < 1 || end_enhancement > 5 {
+        panic!("Enhancement level of {end_enhancement}, was given, when it should be in the range 1-5.");
+    };
+    if stacks.len() < end_enhancement.into() {
+        panic!("Not enough stacks were supplied.");
+    };
+
+    let mut amount: f64 = 1.0;
+    let mut i: u8 = 1;
+    for stack in stacks {
+        amount = (1.0 / calc_accessory_chance(i, stack)) * (amount + 1.0);
+        if i >= end_enhancement {break}
+        i += 1;
+    }
+
+    amount
 }
