@@ -1,8 +1,15 @@
-use std::io;
 use bdo_enhancement_profit_calculator::accessories;
-use bdo_enhancement_profit_calculator::bdo_market_requests::{bdo_post_requests::{get_item_buy_sell_info}, sort_buy_sell_info, sort_category_given_info};
+use bdo_enhancement_profit_calculator::bdo_market_requests::{
+    bdo_post_requests::get_item_buy_sell_info, sort_buy_sell_info, sort_category_given_info,
+};
+use std::io;
 
-use {bdo_enhancement_profit_calculator::bdo_market_requests::{bdo_post_requests::get_items_from_category}, bdo_enhancement_profit_calculator::general_calcs::market_calcs::{calc_profit, get_market_tax, calc_profit_taxed}};
+use {
+    bdo_enhancement_profit_calculator::bdo_market_requests::bdo_post_requests::get_items_from_category,
+    bdo_enhancement_profit_calculator::general_calcs::market_calcs::{
+        calc_profit, calc_profit_taxed, get_market_tax,
+    },
+};
 
 fn get_region() -> String {
     let mut inp_region = String::new();
@@ -13,9 +20,6 @@ fn get_region() -> String {
 }
 
 fn main() {
-
-    
-
     let str_inp_region = get_region();
     let str_inp_region = str_inp_region.as_str();
 
@@ -23,7 +27,7 @@ fn main() {
     let necklaces = get_items_from_category(str_inp_region, 20, 2).unwrap();
     let earrings = get_items_from_category(str_inp_region, 20, 3).unwrap();
     let belts = get_items_from_category(str_inp_region, 20, 4).unwrap();
-    
+
     let mut rings = sort_category_given_info(rings).unwrap();
     let mut necklaces = sort_category_given_info(necklaces).unwrap();
     let mut earrings = sort_category_given_info(earrings).unwrap();
@@ -37,7 +41,6 @@ fn main() {
 
     let accessories = accessories::filter_accessories_category(accessories, 3, 10000000, u64::MAX);
 
-
     for acc in accessories {
         let id = acc.item_id.to_string();
         let id = &id;
@@ -47,16 +50,33 @@ fn main() {
         let tet_info = sort_buy_sell_info(tet_info).unwrap();
 
         let mut sold_price = base_info.get_lowest_listed();
-        if sold_price == u64::MAX {sold_price = base_info.get_max_price();}
+        if sold_price == u64::MAX {
+            sold_price = base_info.get_max_price();
+        }
 
         if sold_price * 73 < tet_info.base_price && !acc.item_name.contains("Manos") {
             println!("---------------------------------------------------");
             println!("Name: {}", acc.item_name);
-            println!("Buy at: {} || Sell at : {}", sold_price, tet_info.base_price);
-            println!("Profit: {}", calc_profit((sold_price * 73).try_into().unwrap(), tet_info.base_price.try_into().unwrap()));
-            println!("Profit after tax: {}", calc_profit_taxed(sold_price * 73, tet_info.base_price.try_into().unwrap(), get_market_tax(4500, true, false)));
-        }   
+            println!(
+                "Buy at: {} || Sell at : {}",
+                sold_price, tet_info.base_price
+            );
+            println!(
+                "Profit: {}",
+                calc_profit(
+                    (sold_price * 73).try_into().unwrap(),
+                    tet_info.base_price.try_into().unwrap()
+                )
+            );
+            println!(
+                "Profit after tax: {}",
+                calc_profit_taxed(
+                    sold_price * 73,
+                    tet_info.base_price.try_into().unwrap(),
+                    get_market_tax(4500, true, false)
+                )
+            );
+        }
     }
     io::stdin().read_line(&mut String::new()).unwrap();
 }
-

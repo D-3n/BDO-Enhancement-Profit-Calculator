@@ -1,7 +1,7 @@
+use super::get_bdo_urls::{create_post_url, get_market_url};
 use reqwest;
 use serde_json::{json, Value};
 use std::env;
-use super::get_bdo_urls::{create_post_url, get_market_url};
 /**
  * Copied from https://gist.github.com/guy0090/0a8b7a1e69b03702bb45fb66a05dced5#file-bdowebmarket-js
  *
@@ -36,10 +36,11 @@ const REQUEST_VERIFICATION: &str = "__RequestVerificationToken";
 const COOKIE_TRADE_AUTH: &'static str = env!("BDO_COOKIE_TRADE_AUTH");
 
 // __RequestVerificationToken Cookie
-const COOKIE_REQUEST_VERIFICATION_TOKEN: &'static str =  env!("BDO_COOKIE_REQUEST_VERIFICATION_TOKEN");
+const COOKIE_REQUEST_VERIFICATION_TOKEN: &'static str =
+    env!("BDO_COOKIE_REQUEST_VERIFICATION_TOKEN");
 
 // __RequestVerificationToken URL Encoded Param
-const QUERY_REQUEST_VERFICATION_TOKEN: &'static str =  env!("BDO_QUERY_REQUEST_VERFICATION_TOKEN");
+const QUERY_REQUEST_VERFICATION_TOKEN: &'static str = env!("BDO_QUERY_REQUEST_VERFICATION_TOKEN");
 /*
 * These functions parse the results of post requests.
 * The data is extracted from the json returned, and made into a string.
@@ -47,7 +48,6 @@ const QUERY_REQUEST_VERFICATION_TOKEN: &'static str =  env!("BDO_QUERY_REQUEST_V
 
 // Takes resultMsg (works for trademarket functions)
 fn get_result_msg_data(body_text: String) -> Result<String, serde_json::Error> {
-
     let v: Value = serde_json::from_str(&body_text)?;
 
     let required_data = v["resultMsg"].to_string();
@@ -59,15 +59,12 @@ fn get_result_msg_data(body_text: String) -> Result<String, serde_json::Error> {
 
 // get_items_from_category
 fn get_result_msg_market_list(body_text: String) -> Result<String, serde_json::Error> {
-
     let v: Value = serde_json::from_str(&body_text)?;
 
     let required_data = v["marketList"].to_string();
 
-
     Ok(required_data)
 }
-
 
 /*
 * The following functions make post requests to the bdo api
@@ -91,7 +88,7 @@ pub fn get_item_info(region: &str, item_id: u16) -> Result<String, reqwest::Erro
 
     // Get String of data seperated by "|"
     let res_body = res.text()?;
-    
+
     let result_msg = get_result_msg_data(res_body).unwrap();
 
     Ok(result_msg.to_string())
@@ -161,7 +158,6 @@ pub fn get_items_from_category(
     main_category_no: u16,
     sub_category_no: u16,
 ) -> Result<String, reqwest::Error> {
-
     let main_category_no = main_category_no.to_string();
     let sub_category_no = sub_category_no.to_string();
 

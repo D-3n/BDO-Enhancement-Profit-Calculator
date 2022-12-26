@@ -11,6 +11,8 @@ When compiling, three environment variables need to be set:
 These values need to be set from your central market.
 Instructions are provided in <code>/src/bdo_market_requests/bdo_post_requests.rs</code>
 
+These appear to be region specific (NA/EU work with the same one), needs testing.
+
 ### To do
 
 In no particular order:
