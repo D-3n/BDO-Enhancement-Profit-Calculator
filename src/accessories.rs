@@ -24,20 +24,11 @@ pub fn filter_accessories_category(
 }
 
 /// Calculates the success chance of enhancing an accessory.
-<<<<<<< HEAD
-/// 
-/// # Panics
-/// 
-/// If the given enhancement level is greater than 5.
-/// 
-/// 
-=======
 ///
 /// # Panics
 ///
 /// If the enhancement level is not a valid enhancement (1 - 5 for PRI - PEN)
 ///
->>>>>>> dev
 /// # Examples
 ///
 /// ```
@@ -55,31 +46,14 @@ pub fn filter_accessories_category(
 /// ```
 ///
 pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
-<<<<<<< HEAD
-    
-    if enhancement_level > 5 || enhancement_level < 1 {
-        panic!("The range for accessories is 0-5 (BASE - PEN), level given was {enhancement_level}");
-=======
     if enhancement_level < 1 || enhancement_level > 5 {
         panic!("Enhancement level of {enhancement_level}, was given, when it should be in the range 1-5.");
->>>>>>> dev
     }
 
     let chance: f64;
-    let failstack: f64 = failstack as f64;
+    let failstack = failstack as f64;
 
     match enhancement_level {
-<<<<<<< HEAD
-        1 => if failstack > 18.0 {chance = 0.25 + (18.0 * 0.025) + ((failstack - 18.0) * 0.005)} else {chance = 0.25 + (failstack * 0.025)}
-        2 => if failstack > 40.0 {chance = 0.1 + (40.0 * 0.01) + ((failstack - 40.0) * 0.002)} else {chance = 0.1 + (failstack * 0.01)}
-        3 => if failstack > 44.0 {chance = 0.075 + (44.0 * 0.0075) + ((failstack - 44.0) * 0.0015)} else {chance = 0.075 + (failstack * 0.0075)}
-        4 => if failstack > 110.0 {chance = 0.025 + (110.0 * 0.0025) + ((failstack - 110.0) * 0.0005)} else {chance = 0.025 + (failstack * 0.0025)}
-        5 => if failstack > 390.0 {chance = 0.005 + (390.0 * 0.0005) + ((failstack - 390.0) * 0.0001)} else {chance = 0.005 + (failstack * 0.0005)}
-        _ => panic!("Impossible result for enhancement level: {enhancement_level}")
-    }
-
-    if chance > 0.9 {return 0.9}; // No matter the stack, enhancements can't have more than a 90% chance.
-=======
         1 => {
             if failstack > 18.0 {
                 chance = 0.25 + (18.0 * 0.025) + ((failstack - 18.0) * 0.005)
@@ -121,27 +95,17 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
     if chance > 0.9 {
         return 0.9;
     };
->>>>>>> dev
 
     chance
 }
 
 /// Calculates accessories required to enhance from base to a certain level.
-<<<<<<< HEAD
-/// 
-/// # Panics
-/// 
-/// If the given enhancement level is greater than 5.
-/// 
-/// 
-=======
 ///
 /// # Panics
 ///
 /// If there are less stacks then required
 /// If the enhancement level is too high/low
 ///
->>>>>>> dev
 /// # Examples
 ///
 /// ```
@@ -159,12 +123,6 @@ pub fn calc_accessory_chance(enhancement_level: u8, failstack: u16) -> f64 {
 /// ```
 ///
 pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
-<<<<<<< HEAD
-
-    if end_enhancement < 1 || end_enhancement > 5 {
-        panic!("The range for accessories is 0-5 (BASE - PEN), level given was {end_enhancement}");
-    }
-=======
     if end_enhancement < 1 || end_enhancement > 5 {
         panic!("Enhancement level of {end_enhancement}, was given, when it should be in the range 1-5.");
     };
@@ -172,7 +130,6 @@ pub fn accessories_required(end_enhancement: u8, stacks: Vec<u16>) -> u16 {
         panic!("Not enough stacks were supplied.");
     };
 
->>>>>>> dev
     let mut amount: f64 = 1.0;
     let mut i: u8 = 1;
     for stack in stacks {
@@ -229,3 +186,10 @@ pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 
 
     amount
 }
+/*
+/// Calculates the average profit from a singular tap.
+/// 
+/// 
+///
+//pub fn get_tap_proft();
+*/
