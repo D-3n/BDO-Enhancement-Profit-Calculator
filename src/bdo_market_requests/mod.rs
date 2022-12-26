@@ -3,6 +3,10 @@ pub mod get_bdo_urls;
 
 use serde_json::{Error, Value};
 
+pub trait has_id {
+    fn get_item_id(&self) -> u32;
+}
+
 // Get item info
 pub struct SpecificItemInfo {
     item_id: u32,
@@ -17,33 +21,34 @@ pub struct SpecificItemInfo {
     last_sale_time: String, // Unix timestamp
 }
 
-pub fn sort_specific_item_info(data: String) -> Vec<SpecificItemInfo> {
-    let outer_split = data.split("|").filter(|f| f != &"");
+impl SpecificItemInfo {
+    pub fn build_vec(data: String) -> Vec<Self> {
+        let outer_split = data.split("|").filter(|f| f != &"");
 
-    let mut item_info: Vec<SpecificItemInfo> = Vec::new();
-    for s in outer_split {
-        let inner_split = s.split("-");
+        let mut item_info: Vec<SpecificItemInfo> = Vec::new();
+        for s in outer_split {
+            let inner_split = s.split("-");
 
-        let vec: Vec<&str> = inner_split.collect();
-        let single_item_info = SpecificItemInfo {
-            item_id: vec[0].parse::<u32>().unwrap_or(0),
-            enhancement_min: vec[1].parse::<u8>().unwrap_or(0),
-            enhancement_max: vec[2].parse::<u8>().unwrap_or(0),
-            base_price: vec[3].parse::<u64>().unwrap_or(0),
-            stock: vec[4].parse::<u64>().unwrap_or(0),
-            total_trades: vec[5].parse::<u64>().unwrap_or(0),
-            price_cap_min: vec[6].parse::<u64>().unwrap_or(0),
-            price_cap_max: vec[7].parse::<u64>().unwrap_or(0),
-            last_sale_price: vec[8].parse::<u64>().unwrap_or(0),
-            last_sale_time: vec[9].to_string(),
-        };
+            let vec: Vec<&str> = inner_split.collect();
+            let single_item_info = SpecificItemInfo {
+                item_id: vec[0].parse::<u32>().unwrap_or(0),
+                enhancement_min: vec[1].parse::<u8>().unwrap_or(0),
+                enhancement_max: vec[2].parse::<u8>().unwrap_or(0),
+                base_price: vec[3].parse::<u64>().unwrap_or(0),
+                stock: vec[4].parse::<u64>().unwrap_or(0),
+                total_trades: vec[5].parse::<u64>().unwrap_or(0),
+                price_cap_min: vec[6].parse::<u64>().unwrap_or(0),
+                price_cap_max: vec[7].parse::<u64>().unwrap_or(0),
+                last_sale_price: vec[8].parse::<u64>().unwrap_or(0),
+                last_sale_time: vec[9].to_string(),
+            };
 
-        item_info.push(single_item_info)
+            item_info.push(single_item_info)
+        }
+
+        item_info
     }
-
-    item_info
 }
-
 // Get item price history doesn't need a struct - list of strings
 
 // Get registration queue
@@ -54,24 +59,32 @@ pub struct RegQueueItem {
     registered_timestamp: String,
 }
 
-pub fn sort_reg_queue_item_info(data: String) -> Vec<RegQueueItem> {
-    let outer_split = data.split("|").filter(|f| f != &"");
-
-    let mut item_info: Vec<RegQueueItem> = Vec::new();
-    for s in outer_split {
-        let inner_split = s.split("-");
-        let vec: Vec<&str> = inner_split.collect();
-        let single_item_info = RegQueueItem {
-            item_id: vec[0].parse::<u32>().unwrap_or(0),
-            enhancement_level: vec[1].parse::<u8>().unwrap_or(0),
-            listed_price: vec[2].parse::<u64>().unwrap_or(0),
-            registered_timestamp: vec[3].to_string(),
-        };
-
-        item_info.push(single_item_info)
+impl has_id for RegQueueItem {
+    fn get_item_id(&self) -> u32 {
+        self.item_id
     }
+}
 
-    item_info
+impl RegQueueItem {
+    pub fn build_vec(data: String) -> Vec<Self> {
+        let outer_split = data.split("|").filter(|f| f != &"");
+
+        let mut item_info: Vec<RegQueueItem> = Vec::new();
+        for s in outer_split {
+            let inner_split = s.split("-");
+            let vec: Vec<&str> = inner_split.collect();
+            let single_item_info = RegQueueItem {
+                item_id: vec[0].parse::<u32>().unwrap_or(0),
+                enhancement_level: vec[1].parse::<u8>().unwrap_or(0),
+                listed_price: vec[2].parse::<u64>().unwrap_or(0),
+                registered_timestamp: vec[3].to_string(),
+            };
+
+            item_info.push(single_item_info)
+        }
+
+        item_info
+    }
 }
 
 // Search market by id
@@ -82,24 +95,32 @@ pub struct SearchedItem {
     total_trades: u64,
 }
 
-pub fn sort_searched_item_info(data: String) -> Vec<SearchedItem> {
-    let outer_split = data.split("|").filter(|f| f != &"");
-
-    let mut item_info: Vec<SearchedItem> = Vec::new();
-    for s in outer_split {
-        let inner_split = s.split("-");
-        let vec: Vec<&str> = inner_split.collect();
-        let single_item_info = SearchedItem {
-            item_id: vec[0].parse::<u32>().unwrap_or(0),
-            stock: vec[1].parse::<u64>().unwrap_or(0),
-            base_price: vec[2].parse::<u64>().unwrap_or(0),
-            total_trades: vec[3].parse::<u64>().unwrap_or(0),
-        };
-
-        item_info.push(single_item_info)
+impl has_id for SearchedItem {
+    fn get_item_id(&self) -> u32 {
+        self.item_id
     }
+}
 
-    item_info
+impl SearchedItem {
+    pub fn build_vec(data: String) -> Vec<Self> {
+        let outer_split = data.split("|").filter(|f| f != &"");
+
+        let mut item_info: Vec<SearchedItem> = Vec::new();
+        for s in outer_split {
+            let inner_split = s.split("-");
+            let vec: Vec<&str> = inner_split.collect();
+            let single_item_info = SearchedItem {
+                item_id: vec[0].parse::<u32>().unwrap_or(0),
+                stock: vec[1].parse::<u64>().unwrap_or(0),
+                base_price: vec[2].parse::<u64>().unwrap_or(0),
+                total_trades: vec[3].parse::<u64>().unwrap_or(0),
+            };
+
+            item_info.push(single_item_info)
+        }
+
+        item_info
+    }
 }
 
 // EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
@@ -118,44 +139,68 @@ fn remove_second_quotes(st: String) -> String {
 // Get items from category
 #[derive(Debug)]
 pub struct CategoryGivenInfo {
-    pub item_grade: u8,
-    pub item_id: u32,
-    pub base_price: u64,
-    pub item_name: String,
+    item_grade: u8,
+    item_id: u32,
+    base_price: u64,
+    item_name: String,
     stock: u64,
 }
 
-pub fn sort_category_given_info(data: String) -> Result<Vec<CategoryGivenInfo>, Error> {
-    let v: Value = serde_json::from_str(&data)?;
+impl has_id for CategoryGivenInfo {
+    fn get_item_id(&self) -> u32 {
+        self.item_id
+    }
+}
 
-    let v = if let serde_json::Value::Array(entries) = v {
-        entries
-    } else {
-        panic!("Data inputted was not an array")
-    };
-    // v is a Vector of items, stored as type: serde_json::Value (Object)
-
-    let mut item_info: Vec<CategoryGivenInfo> = Vec::new();
-
-    for item in &v {
-        let grade: u8 = item["grade"].to_string().parse::<u8>().unwrap();
-        let id: u32 = item["mainKey"].to_string().parse::<u32>().unwrap();
-        let base_price: u64 = item["minPrice"].to_string().parse::<u64>().unwrap();
-        let name: String = remove_second_quotes(item["name"].to_string());
-        let stock: u64 = item["sumCount"].to_string().parse::<u64>().unwrap();
-
-        let single_item_info: CategoryGivenInfo = CategoryGivenInfo {
-            item_grade: grade,
-            item_id: id,
-            base_price: base_price,
-            item_name: name,
-            stock: stock,
-        };
-
-        item_info.push(single_item_info);
+impl CategoryGivenInfo {
+    pub fn get_item_grade(&self) -> u8 {
+        self.item_grade
     }
 
-    Ok(item_info)
+    pub fn get_item_id(&self) -> u32 {
+        self.item_id
+    }
+
+    pub fn get_base_price(&self) -> u64 {
+        self.base_price
+    }
+
+    pub fn get_item_name(&self) -> &str {
+        &self.item_name
+    }
+
+    pub fn build_vec(data: String) -> Result<Vec<Self>, Error> {
+        let v: Value = serde_json::from_str(&data)?;
+
+        let v = if let serde_json::Value::Array(entries) = v {
+            entries
+        } else {
+            panic!("Data inputted was not an array")
+        };
+        // v is a Vector of items, stored as type: serde_json::Value (Object)
+
+        let mut item_info: Vec<CategoryGivenInfo> = Vec::new();
+
+        for item in &v {
+            let grade: u8 = item["grade"].to_string().parse::<u8>().unwrap();
+            let id: u32 = item["mainKey"].to_string().parse::<u32>().unwrap();
+            let base_price: u64 = item["minPrice"].to_string().parse::<u64>().unwrap();
+            let name: String = remove_second_quotes(item["name"].to_string());
+            let stock: u64 = item["sumCount"].to_string().parse::<u64>().unwrap();
+
+            let single_item_info: CategoryGivenInfo = CategoryGivenInfo {
+                item_grade: grade,
+                item_id: id,
+                base_price: base_price,
+                item_name: name,
+                stock: stock,
+            };
+
+            item_info.push(single_item_info);
+        }
+
+        Ok(item_info)
+    }
 }
 
 #[derive(Debug)]
@@ -170,7 +215,7 @@ pub struct BiddingInfo {
 pub struct ItemBuySellInfo {
     // Impls need testing
     bids: Vec<BiddingInfo>,
-    pub base_price: u64,
+    base_price: u64,
     enhancement_group: u8,
     enhancement_material_id: u32,
     enhancement_material_base_price: u64,
@@ -178,6 +223,10 @@ pub struct ItemBuySellInfo {
     max_bids_per_person: u16,
 }
 impl ItemBuySellInfo {
+    pub fn get_base_price(&self) -> u64 {
+        self.base_price
+    }
+
     pub fn get_max_price(&self) -> u64 {
         let mut max: u64 = 0;
         for bid in &self.bids {

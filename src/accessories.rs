@@ -2,7 +2,9 @@
 //!
 //! Accessories is a collection of commands related to accessories, and how their enhancement works.
 
-use crate::bdo_market_requests::CategoryGivenInfo;
+use crate::bdo_market_requests::{
+    bdo_post_requests::get_item_buy_sell_info, has_id, CategoryGivenInfo, ItemBuySellInfo,
+};
 
 /// Filters accessories by grade, a minimum price, and a maximum price.
 ///
@@ -15,9 +17,9 @@ pub fn filter_accessories_category(
     let accs = accessories
         .into_iter()
         .filter(|acc| {
-            acc.item_grade == grade_filter
-                && acc.base_price >= min_price
-                && acc.base_price <= max_price
+            acc.get_item_grade() == grade_filter
+                && acc.get_base_price() >= min_price
+                && acc.get_base_price() <= max_price
         })
         .collect::<Vec<CategoryGivenInfo>>();
     accs
@@ -186,3 +188,12 @@ pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 
 
     amount
 }
+/*
+/// Calculates the average profit from a singular tap.
+///
+///
+///
+// pub fn get_tap_proft<T: has_id>(item: T) -> u64 {
+//  get_item_buy_sell_info(region, item_id, enhancement_id)
+// }
+*/

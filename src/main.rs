@@ -1,6 +1,7 @@
 use bdo_enhancement_profit_calculator::accessories;
+use bdo_enhancement_profit_calculator::bdo_market_requests::CategoryGivenInfo;
 use bdo_enhancement_profit_calculator::bdo_market_requests::{
-    bdo_post_requests::get_item_buy_sell_info, sort_buy_sell_info, sort_category_given_info,
+    bdo_post_requests::get_item_buy_sell_info, sort_buy_sell_info,
 };
 use std::io;
 
@@ -28,10 +29,10 @@ fn main() {
     let earrings = get_items_from_category(str_inp_region, 20, 3).unwrap();
     let belts = get_items_from_category(str_inp_region, 20, 4).unwrap();
 
-    let mut rings = sort_category_given_info(rings).unwrap();
-    let mut necklaces = sort_category_given_info(necklaces).unwrap();
-    let mut earrings = sort_category_given_info(earrings).unwrap();
-    let mut belts = sort_category_given_info(belts).unwrap();
+    let mut rings = CategoryGivenInfo::build_vec(rings).unwrap();
+    let mut necklaces = CategoryGivenInfo::build_vec(necklaces).unwrap();
+    let mut earrings = CategoryGivenInfo::build_vec(earrings).unwrap();
+    let mut belts = CategoryGivenInfo::build_vec(belts).unwrap();
 
     let mut accessories = Vec::new();
     accessories.append(&mut rings);
@@ -42,7 +43,7 @@ fn main() {
     let accessories = accessories::filter_accessories_category(accessories, 3, 10000000, u64::MAX);
 
     for acc in accessories {
-        let id = acc.item_id.to_string();
+        let id = acc.get_item_id().to_string();
         let id = &id;
         let base_info = get_item_buy_sell_info(str_inp_region, id, "0").unwrap();
         let tet_info = get_item_buy_sell_info(str_inp_region, id, "4").unwrap();
@@ -54,25 +55,26 @@ fn main() {
             sold_price = base_info.get_max_price();
         }
 
-        if sold_price * 73 < tet_info.base_price && !acc.item_name.contains("Manos") {
+        if sold_price * 73 < tet_info.get_base_price() && !acc.get_item_name().contains("Manos") {
             println!("---------------------------------------------------");
-            println!("Name: {}", acc.item_name);
+            println!("Name: {}", acc.get_item_name());
             println!(
                 "Buy at: {} || Sell at : {}",
-                sold_price, tet_info.base_price
+                sold_price,
+                tet_info.get_base_price()
             );
             println!(
                 "Profit: {}",
                 calc_profit(
                     (sold_price * 73).try_into().unwrap(),
-                    tet_info.base_price.try_into().unwrap()
+                    tet_info.get_base_price().try_into().unwrap()
                 )
             );
             println!(
                 "Profit after tax: {}",
                 calc_profit_taxed(
                     sold_price * 73,
-                    tet_info.base_price.try_into().unwrap(),
+                    tet_info.get_base_price().try_into().unwrap(),
                     get_market_tax(4500, true, false)
                 )
             );
