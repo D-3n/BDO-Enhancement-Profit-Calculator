@@ -211,17 +211,6 @@ impl ItemBuySellInfo {
     }
 }
 
-/*
-priceList
-marketConditionList
-basePrice
-enchantGroup
-enchantMaterialKey
-enchantMaterialPrice
-enchantNeedCount
-maxRegisterForWorldMarket
-*/
-
 pub fn sort_buy_sell_info(data: String) -> Result<ItemBuySellInfo, Error> {
     let v: Value = serde_json::from_str(&data)?;
 
