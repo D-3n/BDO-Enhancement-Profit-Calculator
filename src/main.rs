@@ -1,7 +1,7 @@
-use bdo_enhancement_profit_calculator::accessories;
-use bdo_enhancement_profit_calculator::bdo_market_requests::CategoryGivenInfo;
+use bdo_enhancement_profit_calculator::accessories::{self, get_tap_proft};
+use bdo_enhancement_profit_calculator::bdo_market_requests::bdo_post_requests::get_item_buy_sell_info;
 use bdo_enhancement_profit_calculator::bdo_market_requests::{
-    bdo_post_requests::get_item_buy_sell_info, sort_buy_sell_info,
+    CategoryGivenInfo, ItemBuySellInfo, ItemID, RegQueueItem,
 };
 use std::io;
 
@@ -47,8 +47,8 @@ fn main() {
         let id = &id;
         let base_info = get_item_buy_sell_info(str_inp_region, id, "0").unwrap();
         let tet_info = get_item_buy_sell_info(str_inp_region, id, "4").unwrap();
-        let base_info = sort_buy_sell_info(base_info).unwrap();
-        let tet_info = sort_buy_sell_info(tet_info).unwrap();
+        let base_info = ItemBuySellInfo::build_vec(base_info).unwrap();
+        let tet_info = ItemBuySellInfo::build_vec(tet_info).unwrap();
 
         let mut sold_price = base_info.get_lowest_listed();
         if sold_price == u64::MAX {

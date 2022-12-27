@@ -3,7 +3,7 @@
 //! Accessories is a collection of commands related to accessories, and how their enhancement works.
 
 use crate::bdo_market_requests::{
-    bdo_post_requests::get_item_buy_sell_info, has_id, CategoryGivenInfo, ItemBuySellInfo,
+    bdo_post_requests::get_item_buy_sell_info, CategoryGivenInfo, HasId, ItemBuySellInfo,
 };
 
 /// Filters accessories by grade, a minimum price, and a maximum price.
@@ -188,12 +188,31 @@ pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 
 
     amount
 }
-/*
+
 /// Calculates the average profit from a singular tap.
 ///
+/// # Panics
 ///
+/// If the given item has an enhancement level above TET (4)
 ///
-// pub fn get_tap_proft<T: has_id>(item: T) -> u64 {
-//  get_item_buy_sell_info(region, item_id, enhancement_id)
-// }
-*/
+pub fn get_tap_proft<T: HasId>(item_id: T, level: u8, stack: u16, region: &str) -> i64 {
+    let id = item_id.get_item_id();
+    if level > 4 {
+        panic!("An enhancement level greater than 4 (TET, max - 1 for accessories) was supplied.")
+    };
+
+    let item = get_item_buy_sell_info(region, &id.to_string(), &level.to_string()).unwrap();
+    let item = ItemBuySellInfo::build_vec(item).unwrap();
+    let upgrade_item =
+        get_item_buy_sell_info(region, &id.to_string(), &(level + 1).to_string()).unwrap();
+    let upgrade_item = ItemBuySellInfo::build_vec(upgrade_item).unwrap();
+
+    let base_item = get_item_buy_sell_info(region, &id.to_string(), "0").unwrap();
+    let base_item = ItemBuySellInfo::build_vec(base_item).unwrap();
+    let chance = calc_accessory_chance(level + 1, stack);
+
+    let make_cost =
+        (base_item.get_lowest_listed() + item.get_lowest_listed()) as f64 * (1.0 / chance);
+
+    upgrade_item.get_base_price() as i64 - make_cost.ceil() as i64
+}

@@ -3,8 +3,24 @@ pub mod get_bdo_urls;
 
 use serde_json::{Error, Value};
 
-pub trait has_id {
+pub trait HasId {
     fn get_item_id(&self) -> u32;
+}
+
+pub struct ItemID {
+    item_id: u32,
+}
+
+impl HasId for ItemID {
+    fn get_item_id(&self) -> u32 {
+        self.item_id
+    }
+}
+
+impl ItemID {
+    pub fn new(id: u32) -> Self {
+        ItemID { item_id: id }
+    }
 }
 
 // Get item info
@@ -59,7 +75,7 @@ pub struct RegQueueItem {
     registered_timestamp: String,
 }
 
-impl has_id for RegQueueItem {
+impl HasId for RegQueueItem {
     fn get_item_id(&self) -> u32 {
         self.item_id
     }
@@ -95,7 +111,7 @@ pub struct SearchedItem {
     total_trades: u64,
 }
 
-impl has_id for SearchedItem {
+impl HasId for SearchedItem {
     fn get_item_id(&self) -> u32 {
         self.item_id
     }
@@ -146,7 +162,7 @@ pub struct CategoryGivenInfo {
     stock: u64,
 }
 
-impl has_id for CategoryGivenInfo {
+impl HasId for CategoryGivenInfo {
     fn get_item_id(&self) -> u32 {
         self.item_id
     }
@@ -227,6 +243,10 @@ impl ItemBuySellInfo {
         self.base_price
     }
 
+    pub fn get_enhancement_material_id(&self) -> u32 {
+        self.enhancement_material_id
+    }
+
     pub fn get_max_price(&self) -> u64 {
         let mut max: u64 = 0;
         for bid in &self.bids {
@@ -249,66 +269,73 @@ impl ItemBuySellInfo {
     }
     pub fn get_lowest_listed(&self) -> u64 {
         let mut price: u64 = u64::MAX;
+        let mut max_price: u64 = 0;
         for bid in &self.bids {
+            if bid.bidding_price > max_price {
+                max_price = bid.bidding_price;
+            }
             if bid.sell_count > 0 {
                 if bid.bidding_price < price {
                     price = bid.bidding_price;
                 }
             }
         }
+        if price == u64::MAX {
+            price = max_price;
+        }
         price
     }
-}
 
-pub fn sort_buy_sell_info(data: String) -> Result<ItemBuySellInfo, Error> {
-    let v: Value = serde_json::from_str(&data)?;
+    pub fn build_vec(data: String) -> Result<Self, Error> {
+        let v: Value = serde_json::from_str(&data)?;
 
-    let max_bids_per_person = v["maxRegisterForWorldMarket"]
-        .to_string()
-        .parse::<u16>()
-        .unwrap();
-    let base_price = v["basePrice"].to_string().parse::<u64>().unwrap();
-    let enhancement_group = v["enchantGroup"].to_string().parse::<u8>().unwrap();
-    let enhancement_material_id = v["enchantMaterialKey"].to_string().parse::<u32>().unwrap();
-    let enhancement_material_base_price = v["enchantMaterialPrice"]
-        .to_string()
-        .parse::<u64>()
-        .unwrap();
-    let enhancement_material_required_amount =
-        v["enchantNeedCount"].to_string().parse::<u8>().unwrap();
+        let max_bids_per_person = v["maxRegisterForWorldMarket"]
+            .to_string()
+            .parse::<u16>()
+            .unwrap();
+        let base_price = v["basePrice"].to_string().parse::<u64>().unwrap();
+        let enhancement_group = v["enchantGroup"].to_string().parse::<u8>().unwrap();
+        let enhancement_material_id = v["enchantMaterialKey"].to_string().parse::<u32>().unwrap();
+        let enhancement_material_base_price = v["enchantMaterialPrice"]
+            .to_string()
+            .parse::<u64>()
+            .unwrap();
+        let enhancement_material_required_amount =
+            v["enchantNeedCount"].to_string().parse::<u8>().unwrap();
 
-    let all_bids = v["marketConditionList"].clone();
+        let all_bids = v["marketConditionList"].clone();
 
-    let all_bids = if let serde_json::Value::Array(entries) = all_bids {
-        entries
-    } else {
-        panic!("Data inputted was not an array")
-    };
-
-    // Get vector of bids
-    let mut bids_vec: Vec<BiddingInfo> = Vec::new();
-
-    for listing in all_bids {
-        let buy: u32 = listing["buyCount"].to_string().parse::<u32>().unwrap();
-        let sell: u32 = listing["sellCount"].to_string().parse::<u32>().unwrap();
-        let price: u64 = listing["pricePerOne"].to_string().parse::<u64>().unwrap();
-
-        let single_bidding: BiddingInfo = BiddingInfo {
-            buy_count: buy,
-            sell_count: sell,
-            bidding_price: price,
+        let all_bids = if let serde_json::Value::Array(entries) = all_bids {
+            entries
+        } else {
+            panic!("Data inputted was not an array")
         };
-        bids_vec.push(single_bidding)
-    }
 
-    let info = ItemBuySellInfo {
-        bids: bids_vec,
-        base_price: base_price,
-        enhancement_group: enhancement_group,
-        enhancement_material_id: enhancement_material_id,
-        enhancement_material_base_price: enhancement_material_base_price,
-        enhancement_material_required_amount: enhancement_material_required_amount,
-        max_bids_per_person: max_bids_per_person,
-    };
-    Ok(info)
+        // Get vector of bids
+        let mut bids_vec: Vec<BiddingInfo> = Vec::new();
+
+        for listing in all_bids {
+            let buy: u32 = listing["buyCount"].to_string().parse::<u32>().unwrap();
+            let sell: u32 = listing["sellCount"].to_string().parse::<u32>().unwrap();
+            let price: u64 = listing["pricePerOne"].to_string().parse::<u64>().unwrap();
+
+            let single_bidding: BiddingInfo = BiddingInfo {
+                buy_count: buy,
+                sell_count: sell,
+                bidding_price: price,
+            };
+            bids_vec.push(single_bidding)
+        }
+
+        let info = ItemBuySellInfo {
+            bids: bids_vec,
+            base_price: base_price,
+            enhancement_group: enhancement_group,
+            enhancement_material_id: enhancement_material_id,
+            enhancement_material_base_price: enhancement_material_base_price,
+            enhancement_material_required_amount: enhancement_material_required_amount,
+            max_bids_per_person: max_bids_per_person,
+        };
+        Ok(info)
+    }
 }
