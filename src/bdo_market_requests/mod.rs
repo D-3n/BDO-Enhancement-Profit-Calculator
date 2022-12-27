@@ -1,6 +1,9 @@
 pub mod bdo_post_requests;
 pub mod get_bdo_urls;
 
+use bdo_post_requests::{
+    get_item_buy_sell_info, get_items_from_category, get_registration_queue, search_market_by_id,
+};
 use serde_json::{Error, Value};
 
 pub trait HasId {
@@ -38,6 +41,12 @@ pub struct SpecificItemInfo {
 }
 
 impl SpecificItemInfo {
+    pub fn from_post(region: &str, item_id: &str, enhancement_id: &str) -> Vec<Self> {
+        let data = get_item_buy_sell_info(region, item_id, enhancement_id).unwrap();
+
+        SpecificItemInfo::build_vec(data)
+    }
+
     pub fn build_vec(data: String) -> Vec<Self> {
         let outer_split = data.split("|").filter(|f| f != &"");
 
@@ -82,6 +91,11 @@ impl HasId for RegQueueItem {
 }
 
 impl RegQueueItem {
+    pub fn from_post(region: &str) -> Vec<Self> {
+        let data = get_registration_queue("eu").unwrap();
+        return RegQueueItem::build_vec(data);
+    }
+
     pub fn build_vec(data: String) -> Vec<Self> {
         let outer_split = data.split("|").filter(|f| f != &"");
 
@@ -118,6 +132,12 @@ impl HasId for SearchedItem {
 }
 
 impl SearchedItem {
+    pub fn from_post(region: &str, item_ids: Vec<&str>) -> Vec<Self> {
+        let data = search_market_by_id(region, item_ids).unwrap();
+
+        return SearchedItem::build_vec(data);
+    }
+
     pub fn build_vec(data: String) -> Vec<Self> {
         let outer_split = data.split("|").filter(|f| f != &"");
 
@@ -183,6 +203,11 @@ impl CategoryGivenInfo {
 
     pub fn get_item_name(&self) -> &str {
         &self.item_name
+    }
+
+    pub fn from_post(region: &str, main_category_no: u16, sub_category_no: u16) -> Vec<Self> {
+        let data = get_items_from_category(region, main_category_no, sub_category_no).unwrap();
+        return CategoryGivenInfo::build_vec(data).unwrap();
     }
 
     pub fn build_vec(data: String) -> Result<Vec<Self>, Error> {
@@ -284,6 +309,12 @@ impl ItemBuySellInfo {
             price = max_price;
         }
         price
+    }
+
+    pub fn from_post(region: &str, item_id: &str, enhancement_id: &str) -> Self {
+        let data = get_item_buy_sell_info(region, item_id, enhancement_id).unwrap();
+
+        return ItemBuySellInfo::build_vec(data).unwrap();
     }
 
     pub fn build_vec(data: String) -> Result<Self, Error> {
