@@ -22,6 +22,6 @@ In no particular order:
 - [ ] Add calculation of failstack costs
 - [ ] Multithread more complex operations
 - [ ] Improve error handling
-- [ ] Add functionality for different levels of enhancements (for accessories)
+- [x] Add functionality for different levels of enhancements (for accessories)
 - [ ] Create simple UI (maybe)
 - [ ] Improve handling of POST requests

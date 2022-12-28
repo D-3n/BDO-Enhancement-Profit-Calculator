@@ -159,7 +159,6 @@ impl SearchedItem {
     }
 }
 
-// EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 // IDK
 
 // Code to remove \"\" from string:
@@ -311,13 +310,15 @@ impl ItemBuySellInfo {
         price
     }
 
-    pub fn from_post(region: &str, item_id: &str, enhancement_id: &str) -> Self {
+    pub fn from_post(region: &str, item_id: &str, enhancement_id: &str) -> Result<Self, String> {
         let data = get_item_buy_sell_info(region, item_id, enhancement_id).unwrap();
-
-        return ItemBuySellInfo::build_vec(data).unwrap();
+        if data.contains("This item cannot be registered on the Central Market.") {
+            return Err(String::from("The item can't be found on the market."))
+        }
+        return Ok(ItemBuySellInfo::build_vec(data).unwrap());
     }
 
-    pub fn build_vec(data: String) -> Result<Self, Error> {
+    fn build_vec(data: String) -> Result<Self, Error> {
         let v: Value = serde_json::from_str(&data)?;
 
         let max_bids_per_person = v["maxRegisterForWorldMarket"]
@@ -339,7 +340,7 @@ impl ItemBuySellInfo {
         let all_bids = if let serde_json::Value::Array(entries) = all_bids {
             entries
         } else {
-            panic!("Data inputted was not an array")
+            panic!("Data was not inputted as an array.")
         };
 
         // Get vector of bids
