@@ -271,6 +271,7 @@ pub fn accessories_required_exact(end_enhancement: u8, stacks: Vec<u16>) -> f64 
 
     amount
 }
+
 /// Calculates the cost of a singular tap.
 /// 
 /// # Panics
@@ -395,3 +396,4 @@ pub fn get_tap_profit_mult<T: HasId>(item_details: AccEnhancementDetails<T>, end
     profit_data
 
 }
+
