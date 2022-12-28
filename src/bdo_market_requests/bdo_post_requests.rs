@@ -204,6 +204,5 @@ pub fn get_item_buy_sell_info(
         .send()?;
 
     let res_body = res.text()?;
-
     Ok(res_body)
 }
